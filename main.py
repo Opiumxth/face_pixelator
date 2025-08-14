@@ -1,9 +1,10 @@
-#Librerias
+from detector import detectar_rostros
+from pixelator import pixelar_rostros
+
 import os
 import time
+import cv2
 
-from opc1 import cara
-from opc2 import sello
 def menu():
         while True:
                 os.system("clear")
@@ -16,7 +17,7 @@ Menu de opciones:
         3. Detalles del programa
         4. Salir
                 """)
-                
+
                 while True:
                         try:
                                 opc = int(input("\nSeleccione una opcion: "))
@@ -30,9 +31,9 @@ Menu de opciones:
                                 print("Ingrese una opcion valida!\n")
 
                 if opc == 4:
-                        print("\Grcias por su preferencia")
+                        print("\nGrcias por su preferencia")
                         time.sleep(1)
-                        print("Saliendo del programa...")
+                        print("Saliendo del programa...\n")
                         time.sleep(1.5)
                         break
 
@@ -50,16 +51,64 @@ Menu de opciones:
                                 # Ademas tener la opcion de presionar una tecla para salir de la camara
                                 # Cerrar camara
                                 # Volver al menu
+
                         case 2:
-                                pass
-                                # Pedir la imagen, puede ser con la ruta general o seria mejor que esta este enl a misma carpeta
+                                print("\n[ Pixelar Imagen ]")
+                                # Pedir la imagen y verificar que exista, puede ser con la ruta general o seria mejor que esta este enl a misma carpeta
+                                while True:
+                                        nombre_imagen = input("Ingrese el nombre de la imagen(con extension): ").strip() # Pedir solo el nombre ya que estara en la misma carpeta
+                                        ruta_imagen = os.path.join("images", nombre_imagen)
+
+                                        if os.path.exists(ruta_imagen): # Verificar que exista
+                                                print("Procesando imagen...")
+                                                time.sleep(1)
+                                                break
+                                        else:
+                                                print("\n[ERROR]: No se encontro el archivo en la carpeta 'images'. Intente de nuevo")
+                                                time.sleep(1)
+
                                 # Leer la imagen cv.imread() creo
-                                # Detectar los rostros en la imagen
-                                # Por cada rostro extraer solo la region de interes (rostro)
-                                # Aplicar el pixelado
-                                # Mostrar la imagen en una ventana
-                                        # Preguntar si desea guardar la imagen, 'nombre_pixelated.jpg'
+                                img = cv2.imread(ruta_imagen)
+
+                                if img is None:
+                                        print("[ERROR]: No se pudo leer la imagen. Verifique el archivo")
+                                        break
+
+                                rostros = detectar_rostros(img)
+
+                                # Verificar si se detectaron rostros
+                                if len(rostros) == 0:
+                                        print("[INFO]: No se detectaron rostros")
+                                        time.sleep(1)
+                                else:
+                                        # Aplicar el pixelado
+                                        img_pixelada = pixelar_rostros(img, rostros)
+
+                                        # Presionar Enter para salir de la ventana
+                                        print("[INFO]: Presione Enter para salir")
+                                        # Mostrar la imagen en una ventana
+                                        cv2.imshow("Imagen Pixelada", img_pixelada)
+
+                                        # Pedir la tecla d esalida
+                                        while True:
+                                                salir = cv2.waitKey(0) & 0xFF
+                                                if salir == 13:
+                                                        break
+
+                                        cv2.destroyAllWindows()
+                                        # Preguntar si desea guardar la imagen, 'pixelated_nombre.jpg'
+                                        guardar = input("Desea guardar la imagen picelada(s/n): ").lower()
+                                        if guardar == 's':      
+                                                ruta_salida = os.path.join("images-outputs", f"pixelated_{nombre_imagen}")
+                                                cv2.imwrite(ruta_salida, img_pixelada)
+                                                print(f"[INFO]: Imagen guardada en '{ruta_salida}'")
                                 # Volver al menu
+                                print("")
+                                input("Presione Enter para continuar...")
+                                time.sleep(1)
+                                print("Redirigiendo...")
+                                time.sleep(1.5)
+
                         case 3:
                                 os.system("clear")
                                 print("""
