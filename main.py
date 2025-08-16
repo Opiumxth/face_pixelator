@@ -37,22 +37,44 @@ Menu de opciones:
                         time.sleep(1.5)
                         break
 
-                # Para ambas opciones seran con el haar cascade -> escala de grises y eso
+                # Ambas opciones seran con el haar cascade -> escala de grises y eso
                 match opc:
                         case 1:
-                                pass
+                                os.system("clear")
+                                print("\n [Pixelar En Tiempo Real]")
                                 # Iniciar la camara
+                                cap = cv2.VideoCapture(0) # Para la camara predeterminaada
+
+                                if not cap.isOpened():
+                                        print("\n[ERORR]: No se pudo acceder a la camara")
+                                        time.sleep(1)
+                                        break
+                                print("\n[INFO]: Presione Enter para salir")
+
                                 # Leer frame por frame en tiempo real
-                                # Detectar los rostros de cada frame
-                                # Por cada rostro extraer solo la region de interes (rostro)
-                                # Aplicar el pixelado a este rostro frame por frame
-                                # Reemplazar el rostro original con el pixelado
-                                # Mostrar el rostro en la misma ventana
-                                # Ademas tener la opcion de presionar una tecla para salir de la camara
+                                while True:
+                                        ret, frame = cap.read()
+                                        if not ret:
+                                                print("[ERROR]: No se pudo leer un frame de la camara")
+                                                break
+                                        # Detectar los rostros de cada frame
+                                        rostros = detectar_rostros(frame)
+                                        # Aplicar el pixelado a este rostro frame por frame
+                                        frame_pixelado = pixelar_rostros(frame, rostros)
+                                        # Mostrar el rostro en la misma ventana
+                                        cv2.imshow("Pixelador en tiempo real", frame_pixelado)
+
+                                        # Presionar Enter para cerrar la ventana
+                                        if cv2.waitKey(1) & 0xFF == 13:
+                                                break
+
                                 # Cerrar camara
+                                cap.release()
+                                cv2.destroyAllWindows()
                                 # Volver al menu
 
                         case 2:
+                                os.system("clear")
                                 print("\n[ Pixelar Imagen ]")
                                 # Pedir la imagen y verificar que exista, puede ser con la ruta general o seria mejor que esta este enl a misma carpeta
                                 while True:
@@ -130,8 +152,6 @@ Opcion 2:
                                 time.sleep(1)
                                 print("Redirigiendo...")
                                 time.sleep(1.5)
-
-
 
 if __name__ == "__main__":
         menu()

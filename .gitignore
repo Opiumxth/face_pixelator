@@ -1,4 +1,7 @@
 #star si ves esto ^-^
+__pycache__/
+*.pyc
+*.pyo
 venv/
 images/
 images-outputs/
